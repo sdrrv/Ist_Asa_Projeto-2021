@@ -60,8 +60,8 @@ class Graph{
       Graph(){
          vertices =  std::make_unique< std::vector< std::unique_ptr<Vertice> > >();   
       };
-      std::unique_ptr<Vertice> getVertice(int index){
-         return  vertices[index];
+      Vertice* getVertice(int index){
+         return  (*vertices)[index].get();
       }          
 
 
