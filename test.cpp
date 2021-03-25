@@ -12,7 +12,7 @@ class Vertice{
       int id;
       Vertice * parent;
       int knocked_count;
-      color color;
+      color color;      
    public:
       Vertice(int ID) {
          id = ID;
@@ -24,4 +24,12 @@ class Vertice{
 
 class Graph{
    private:
+      std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > vertices;
+   public:
+      Graph(){
+         vertices =  std::make_unique< std::vector< std::unique_ptr<Vertice> > >();   
+      }
+          
+
+
 };
