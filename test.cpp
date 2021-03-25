@@ -59,7 +59,7 @@ class Graph{
    public:
       Graph(){
          vertices =  std::make_unique< std::vector< std::unique_ptr<Vertice> > >();   
-      };
+      }
 
       Vertice* getVertice(int index){
          return  (*vertices)[index].get();
@@ -68,6 +68,8 @@ class Graph{
       Vertice* operator[](int index){
          return getVertice(index);  
       }
+};
 
-
+int main(){        
+   return 0;
 };
