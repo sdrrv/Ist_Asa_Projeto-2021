@@ -1,5 +1,7 @@
 #include <iostream>
+#include <iterator>
 #include <memory>
+#include <ostream>
 #include <vector>
 #include <list>
 
@@ -25,6 +27,10 @@ class Vertice{
 
       void setParent(Vertice * p) {
          _parent = p;
+      }
+
+      int getId(){
+         return _id;
       }
 
       Vertice * getParent(){
@@ -75,5 +81,22 @@ class Graph{
 };
 
 int main(){        
-   return 0;
-};
+   Graph g;
+   for (int id = 0; id < 3; id++)
+      g.addVertice(id);
+   g[0]->addAdjVertice(g[1]);
+   
+   g[0]->addAdjVertice(g[2]);
+   g[1]->addAdjVertice(g[2]);
+   g[2]->addAdjVertice(g[0]);
+   std::cout << "VERTICE 0" << std::endl;
+   std::list<Vertice *> hey = *(g[0]->getAdjVertices());
+   for(Vertice * x : hey)
+      std::cout << x->getId() << std::endl;
+   std::list<Vertice *> hei = *(g[1]->getAdjVertices());
+   for(Vertice * x : hei)
+      std::cout << x->getId() << std::endl;
+   std::list<Vertice *> heo = *(g[0]->getAdjVertices());
+   for(Vertice * x : heo)
+      std::cout << x->getId() << std::endl;
+}
