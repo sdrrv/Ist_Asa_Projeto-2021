@@ -66,7 +66,7 @@ class Graph{
       }          
       
       void addVertice(int id){
-            
+         vertices->push_back( std::make_unique<Vertice>(id) );
       }
 
       Vertice* operator[](int index){
