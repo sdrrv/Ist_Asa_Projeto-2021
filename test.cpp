@@ -95,9 +95,13 @@ void DFS_search(Graph& graph, int verticeId){
    Vertice * v = graph[verticeId];
    v->setColor(GRAY);
    
-   std::list<Vertice *> adjList = (* v->getAdjVertices());
-   
-   
+   std::list<Vertice *> adjList = *(v->getAdjVertices());
+   for(Vertice* i : adjList){
+      v->addKnockedCount(1);
+      i->setParent(v);
+      verticesStack.push(i->getId());
+   }
+   // Agora ir para o final da stack.
 
 }
 
