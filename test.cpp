@@ -4,6 +4,7 @@
 #include <ostream>
 #include <vector>
 #include <list>
+#include <stack>
 
 #define NONE -1
 
@@ -69,6 +70,10 @@ class Graph{
          _vertices =  std::make_unique< std::vector< std::unique_ptr<Vertice> > >();   
          _vertices->reserve(size);
       }
+      
+      int getSize(){
+         return _size;
+      }
 
       Vertice* getVertice(int index){
          return  (*_vertices)[index].get();
@@ -83,6 +88,28 @@ class Graph{
       }
 };
 
+void DFS_search(Graph& graph, int verticeId){
+   std::stack<int> verticesStack;
+   verticesStack.push(verticeId);
+
+   Vertice * v = graph[verticeId];
+   v->setColor(GRAY);
+   
+   std::list<Vertice *> adjList = (* v->getAdjVertices());
+   
+   
+
+}
+
+void DFS(Graph& graph, std::list<int>& possibleRoots){
+   int size = graph.getSize();
+   for (int i = 0; i < size; i++){
+      if (graph[i]->getColor() == WHITE){
+         possibleRoots.push_back(i);
+         DFS_search(graph, i);
+      }
+   }
+}
 
 int main(){        
 }
