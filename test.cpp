@@ -64,6 +64,10 @@ class Graph{
       Vertice* getVertice(int index){
          return  (*vertices)[index].get();
       }          
+      
+      void addVertice(int id){
+            
+      }
 
       Vertice* operator[](int index){
          return getVertice(index);  
