@@ -61,18 +61,21 @@ class Vertice{
 
 class Graph{
    private:
-      std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > vertices;
+      std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > _vertices;
+      int _size;
    public:
-      Graph(){
-         vertices =  std::make_unique< std::vector< std::unique_ptr<Vertice> > >();   
+      Graph(int size){
+         _size = size;
+         _vertices =  std::make_unique< std::vector< std::unique_ptr<Vertice> > >();   
+         _vertices->reserve(size);
       }
 
       Vertice* getVertice(int index){
-         return  (*vertices)[index].get();
+         return  (*_vertices)[index].get();
       }          
       
       void addVertice(int id){
-         vertices->push_back( std::make_unique<Vertice>(id) );
+         _vertices->push_back( std::make_unique<Vertice>(id) );
       }
 
       Vertice* operator[](int index){
@@ -80,23 +83,6 @@ class Graph{
       }
 };
 
+
 int main(){        
-   Graph g;
-   for (int id = 0; id < 3; id++)
-      g.addVertice(id);
-   g[0]->addAdjVertice(g[1]);
-   
-   g[0]->addAdjVertice(g[2]);
-   g[1]->addAdjVertice(g[2]);
-   g[2]->addAdjVertice(g[0]);
-   std::cout << "VERTICE 0" << std::endl;
-   std::list<Vertice *> hey = *(g[0]->getAdjVertices());
-   for(Vertice * x : hey)
-      std::cout << x->getId() << std::endl;
-   std::list<Vertice *> hei = *(g[1]->getAdjVertices());
-   for(Vertice * x : hei)
-      std::cout << x->getId() << std::endl;
-   std::list<Vertice *> heo = *(g[0]->getAdjVertices());
-   for(Vertice * x : heo)
-      std::cout << x->getId() << std::endl;
 }
