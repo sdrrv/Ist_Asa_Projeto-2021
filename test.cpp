@@ -49,15 +49,19 @@ class Vertice{
       void addKnockedCount(int n){
          _knockedCount += n;
       }
-      
-      void addAdjVertice(Vertice * v){
-         _adjVertices->push_back(v);
-      } 
-      
-      std::list<Vertice *> * getAdjVertices(){
-         return _adjVertices.get();
+      int getKnockedCount(){
+         return _knockedCount;
       }
 
+      void addAdjVertice(Vertice *v)
+      {
+         _adjVertices->push_back(v);
+      }
+
+      std::list<Vertice *> *getAdjVertices()
+      {
+         return _adjVertices.get();
+      }
 };
 
 class Graph{
@@ -88,20 +92,49 @@ class Graph{
       }
 };
 
+int* getResult(Graph& graph, std::list<int>& possibleRoots){
+   int max = possibleRoots.front();
+   int count = graph[max]->getKnockedCount();
+
+   for (int i : possibleRoots){
+      Vertice * v = graph[i];
+      if (!v->getParent() && v->getKnockedCount() > count){
+         max = i;
+         count = v->getKnockedCount();
+      }
+   }
+   int res[2] = {max, count};
+   return res;
+}
+
 void DFS_search(Graph& graph, int verticeId){
    std::stack<int> verticesStack;
    verticesStack.push(verticeId);
-
-   Vertice * v = graph[verticeId];
-   v->setColor(GRAY);
    
-   std::list<Vertice *> adjList = *(v->getAdjVertices());
-   for(Vertice* i : adjList){
-      v->addKnockedCount(1);
-      i->setParent(v);
-      verticesStack.push(i->getId());
+   while (!verticesStack.empty()){
+      Vertice * v = graph[verticesStack.top()];
+      if (v->getColor() == GRAY){ 
+         v->setColor(BLACK);
+         v->getParent()->addKnockedCount(v->getKnockedCount());
+         verticesStack.pop(); 
+      }      
+
+      else if (v->getColor() == WHITE){
+         v->setColor(GRAY);
+         
+         std::list<Vertice *> adjList = *(v->getAdjVertices());
+         for(Vertice* adjV : adjList){
+            if (adjV->getColor() == BLACK){
+               v->addKnockedCount(adjV->getKnockedCount());
+            }
+            else {
+               v->addKnockedCount(1);
+               adjV->setParent(v);
+               verticesStack.push(adjV->getId());
+            }
+         }
+      }
    }
-   // Agora ir para o final da stack.
 
 }
 
