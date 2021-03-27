@@ -199,7 +199,8 @@ Graph* processInput(char * input_file){
    char line[MAX_INPUT_SIZE];
 
    ptrf = fopen(input_file,"r");
-
+   if (ptrf == NULL)
+      std::cout << "oops" << std::endl;
    fgets(line, sizeof(line)/sizeof(char), ptrf);
    sscanf(line, "%d %d", &numVertices, &numConnections);
    Graph* graph =  new Graph(numVertices);
