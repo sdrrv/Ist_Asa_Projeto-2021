@@ -151,6 +151,13 @@ void DFS(Graph& graph, std::list<int>& possibleRoots){
    }
 }
 
+
+void createVertices(int numVertices,Graph& graph){
+   for (int i = 0; i< numVertices; i++){
+      graph.addVertice(i);
+   }
+}
+
 int * seeLine(std::string line){
    int result[2]; 
    std::istringstream liner(line);
@@ -167,15 +174,20 @@ int * seeLine(std::string line){
 Graph* ProccessFile(std::string filename){
    std::ifstream file(filename);
    std::string line;
-   //int origin, destination;;
+   bool first = true;
+   Graph* g;
+   //----------------------------------------
+
    while(getline(file,line)){
       int* result;
       result = seeLine(line);
-      
+      if(first){
+         g = new Graph(result[0]);
+         createVertices(result[0],*g);
+         first = false;
+      }   
    }
    
-   
-   Graph* g = new Graph(5);
    return g;
 }
 
