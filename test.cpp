@@ -185,9 +185,11 @@ Graph* ProccessFile(std::string filename){
          g = new Graph(result[0]);
          createVertices(result[0],*g);
          first = false;
-      }   
-   }
-   
+      }
+      else{
+         g->getVertice(result[0])->addAdjVertice(g->getVertice(result[1]));
+      }
+   }   
    return g;
 }
 
