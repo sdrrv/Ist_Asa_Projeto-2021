@@ -7,7 +7,7 @@
 #include <stack>
 #include <string>
 #include <fstream>
-
+#include <bits/stdc++.h>
 
 #define NONE -1
 
@@ -153,6 +153,12 @@ void DFS(Graph& graph, std::list<int>& possibleRoots){
 
 int * seeLine(std::string line){
    int result[2]; 
+   std::istringstream liner(line);
+   std::string word;
+   liner>>word;
+   result[0]= std::stoi(word);
+   liner>>word;
+   result[1]= std::stoi(word);
    return result;
 }
 
