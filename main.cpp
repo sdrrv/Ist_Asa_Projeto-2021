@@ -1,14 +1,21 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
-class Vertice{
-private:
-    int discovery_time;
-    std::vector <Vertice> vertices;
-};
+#include <fstream>
+#include <bits/stdc++.h>
 
 int main(){
+    std::ifstream file("test.in");
+    std::string line;
+
+    while (getline(file,line)){
+        std::istringstream liner(line);
+        std::string word;
+        liner>>word;
+        std::cout <<  std::stoi(word)  << "|";
+        liner>>word;
+        std::cout << std::stoi(word) << std::endl;
+    }
     return 0;
 }
  
