@@ -102,7 +102,7 @@ public:
 };
 
 void getResult(Graph& graph, std::list<int>& possibleRoots, int res[2]){
-    in max = possibleRoots.front();
+    int max = possibleRoots.front();
     int count = graph[max]->getKnockedCount();
 
     for (int i : possibleRoots){
