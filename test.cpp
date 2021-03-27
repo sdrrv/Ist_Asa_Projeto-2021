@@ -153,20 +153,18 @@ void DFS(Graph& graph, std::list<int>& possibleRoots){
 
 
 void createVertices(int numVertices,Graph& graph){
-   for (int i = 0; i< numVertices; i++){
+   for (int i = 0; i< numVertices+1; i++){
       graph.addVertice(i);
    }
 }
 
-int* seeLine(std::string line){
-   int result[2]; 
+void seeLine(std::string line, int result[2]){
    std::istringstream liner(line);
    std::string word;
    liner>>word;
    result[0]= std::stoi(word);
    liner>>word;
    result[1]= std::stoi(word);
-   return result;
 }
 
 
@@ -180,9 +178,9 @@ Graph* ProccessFile(std::string filename){
 
    while(getline(file,line)){
       int result[2];
-      result<<seeLine(line);
+      seeLine(line, result);
       if(first){
-         g = new Graph(result[0]);
+         g = new Graph(result[0]+2);
          createVertices(result[0],*g);
          first = false;
       }
@@ -196,5 +194,14 @@ Graph* ProccessFile(std::string filename){
 int main(int argc, char** argv){  
    std::string fileName =  argv[1];
    Graph * graph = ProccessFile(fileName);
+   std::list<int> possibleRoots;
+   int result[2];
+
+   DFS(*graph,possibleRoots);
+   getResult(*graph,possibleRoots, result);
+
+   std::cout << result[0] << std::endl;
+   std::cout << result[1] << std::endl;
+
    delete graph;   
 }
