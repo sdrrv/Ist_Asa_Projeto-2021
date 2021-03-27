@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <iostream>
 #include <iterator>
 #include <memory>
@@ -7,9 +8,10 @@
 #include <stack>
 #include <string>
 #include <fstream>
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 
 #define NONE -1
+#define MAX_INPUT_SIZE 150
 
 typedef enum COLOR {WHITE, GRAY, BLACK} color;
 
@@ -157,7 +159,7 @@ void createVertices(int numVertices,Graph& graph){
       graph.addVertice(i);
    }
 }
-
+/*
 void seeLine(std::string line, int result[2]){
    std::istringstream liner(line);
    std::string word;
@@ -166,7 +168,6 @@ void seeLine(std::string line, int result[2]){
    liner>>word;
    result[1]= std::stoi(word);
 }
-
 
 
 Graph* ProccessFile(std::string filename){
@@ -191,8 +192,44 @@ Graph* ProccessFile(std::string filename){
    return g;
 }
 
+*/
+Graph* processInput(char * input_file){
+   FILE *ptrf;
+   int numVertices, numConnections;
+   char line[MAX_INPUT_SIZE];
+
+   ptrf = fopen(input_file,"r");
+
+   fgets(line, sizeof(line)/sizeof(char), ptrf);
+   sscanf(line, "%d %d", &numVertices, &numConnections);
+   Graph* graph =  new Graph(numVertices);
+   for (int i = 0; i < numVertices; i++){
+      graph->addVertice(i);
+   }
+
+   for (int i = 0; i < numConnections; i++){
+      fgets(line, sizeof(line)/sizeof(char), ptrf);
+      int v1, v2;
+      sscanf(line, "%d %d", &v1, &v2);
+      graph[v1 - 1].addVertice(v2 - 1);
+   }
+
+   fclose(ptrf);
+
+   return graph;
+}      
+
 int main(int argc, char** argv){  
-   std::string fileName =  argv[1];
-   Graph * graph = ProccessFile(fileName);
-   delete graph;   
+   char* fileName =  argv[1];
+   Graph* graph = processInput(fileName);
+
+   std::list<int> possibleRoots;
+   int result[2];
+
+   DFS(*graph,possibleRoots);
+   getResult(*graph,possibleRoots, result);
+
+   std::cout << result[0] << std::endl;
+   std::cout << result[1] << std::endl;
+   delete graph;
 }
