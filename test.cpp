@@ -158,7 +158,7 @@ void createVertices(int numVertices,Graph& graph){
    }
 }
 
-int * seeLine(std::string line){
+int* seeLine(std::string line){
    int result[2]; 
    std::istringstream liner(line);
    std::string word;
@@ -179,8 +179,8 @@ Graph* ProccessFile(std::string filename){
    //----------------------------------------
 
    while(getline(file,line)){
-      int* result;
-      result = seeLine(line);
+      int result[2];
+      result<<seeLine(line);
       if(first){
          g = new Graph(result[0]);
          createVertices(result[0],*g);
