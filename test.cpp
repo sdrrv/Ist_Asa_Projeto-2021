@@ -28,7 +28,9 @@ class Vertice{
          _knockedCount = 0;
          _adjVertices = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice*>);
       }
-
+      bool hasParent(){
+         return _parent != NULL;
+      }
       void setParent(Vertice * p) {
          _parent = p;
       }
@@ -83,7 +85,7 @@ class Graph{
       }
 
       Vertice* getVertice(int index){
-         return  (*_vertices)[index].get();
+         return  (*_vertices)[index-1].get();
       }          
       
       void addVertice(int id){
@@ -96,29 +98,36 @@ class Graph{
 };
 
 void getResult(Graph& graph, std::list<int>& possibleRoots, int res[2]){
+   std::cout<<"Getting Results"<< std::endl;
    int max = possibleRoots.front();
    int count = graph[max]->getKnockedCount();
+   std::list<int> finalList = std::list<int>();
 
    for (int i : possibleRoots){
       Vertice * v = graph[i];
-      if (!v->getParent() && v->getKnockedCount() > count){
-         max = i;
-         count = v->getKnockedCount();
+      if (!v->getParent()){
+         std::cout<<"Here: "<< v->getId() << v->getAdjVertices()->size() <<std::endl;
+         if(v->getKnockedCount()>count)
+            count = v->getKnockedCount();
+         finalList.push_back(i);
       }
    }
-   res[0] = max;
+   res[0] = finalList.size();
    res[1] = count;
 }
 
 void DFS_search(Graph& graph, int verticeId){
+   std::cout<<"Searhing vertice " << verticeId << std::endl;
    std::stack<int> verticesStack;
    verticesStack.push(verticeId);
    
    while (!verticesStack.empty()){
+      std::cout<<"Stack Size: "<<verticesStack.size()<< std::endl;
       Vertice * v = graph[verticesStack.top()];
       if (v->getColor() == GRAY){ 
          v->setColor(BLACK);
-         v->getParent()->addKnockedCount(v->getKnockedCount());
+         if(v->hasParent())
+            v->getParent()->addKnockedCount(v->getKnockedCount());
          verticesStack.pop(); 
       }      
 
@@ -142,9 +151,11 @@ void DFS_search(Graph& graph, int verticeId){
 }
 
 void DFS(Graph& graph, std::list<int>& possibleRoots){
+   std::cout<<"Starting DFS"<< std::endl;
    int size = graph.getSize();
-   for (int i = 0; i < size; i++){
+   for (int i = 1; i < size; i++){
       if (graph[i]->getColor() == WHITE){
+         std::cout<<"White"<< std::endl;
          possibleRoots.push_back(i);
          DFS_search(graph, i);
       }
@@ -153,7 +164,7 @@ void DFS(Graph& graph, std::list<int>& possibleRoots){
 
 
 void createVertices(int numVertices,Graph& graph){
-   for (int i = 0; i< numVertices+1; i++){
+   for (int i = 1; i< numVertices+1; i++){
       graph.addVertice(i);
    }
 }
@@ -170,6 +181,8 @@ void seeLine(std::string line, int result[2]){
 
 
 Graph* ProccessFile(std::string filename){
+   
+   std::cout<<"ProccessFile"<< std::endl;
    std::ifstream file(filename);
    std::string line;
    bool first = true;
@@ -178,30 +191,33 @@ Graph* ProccessFile(std::string filename){
 
    while(getline(file,line)){
       int result[2];
+      std::cout<<"Getting Line: "<< line << std::endl;
       seeLine(line, result);
       if(first){
-         g = new Graph(result[0]+2);
+         std::cout<<"---------"<< std::endl;
+         g = new Graph(result[0]);
          createVertices(result[0],*g);
          first = false;
       }
       else{
          g->getVertice(result[0])->addAdjVertice(g->getVertice(result[1]));
       }
-   }   
+   }  
+   std::cout<<"All Good so far"<< std::endl;
    return g;
 }
 
-int main(int argc, char** argv){  
-   std::string fileName =  argv[1];
-   Graph * graph = ProccessFile(fileName);
+int main(int argc, char** argv){
+   std::cout<<"Starting"<< std::endl;
+   //std::string fileName =  argv[1];
+   Graph * graph = ProccessFile("test.in");
    std::list<int> possibleRoots;
    int result[2];
 
    DFS(*graph,possibleRoots);
    getResult(*graph,possibleRoots, result);
 
-   std::cout << result[0] << std::endl;
-   std::cout << result[1] << std::endl;
+   std::cout <<"Result: "<< result[0] <<" "<< result[1]<< std::endl;
 
    delete graph;   
 }
