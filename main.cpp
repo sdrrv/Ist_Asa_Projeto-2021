@@ -30,6 +30,10 @@ public:
         _knockedCount = 0;
         _adjVertices = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice*>);
     }
+    
+    bool hasParent(){
+        return _parent != NULL;
+    }
 
     void setParent(Vertice * p) {
         _parent = p;
@@ -102,18 +106,19 @@ public:
 };
 
 void getResult(Graph& graph, std::list<int>& possibleRoots, int res[2]){
-    int max = possibleRoots.front();
-    int count = graph[max]->getKnockedCount();
-
+    int max = 0;
+    int count = 0;
+    
     for (int i : possibleRoots){
         Vertice * v = graph[i];
-        if (!v->getParent() && v->getKnockedCount() > count){
-            max = i;
-            count = v->getKnockedCount();
+        if (!v->getParent()){
+            if(v->getKnockedCount()> count)
+                max = v->getKnockedCount();
+            count++;
         }
     }
-    res[0] = max;
-    res[1] = count;
+    res[0] = count;
+    res[1] = max;
 }
 
 void DFS_search(Graph& graph, int verticeId){
@@ -125,7 +130,7 @@ void DFS_search(Graph& graph, int verticeId){
         if (v->getColor() == GRAY){
             v->setColor(BLACK);
             verticesStack.pop();
-            if (v->getParent())
+            if (v->hasParent())
                 v->getParent()->addKnockedCount(v->getKnockedCount());
         }
 
@@ -164,46 +169,12 @@ void createVertices(int numVertices,Graph& graph){
         graph.addVertice(i);
     }
 }
-/*
-void seeLine(std::string line, int result[2]){
-   std::istringstream liner(line);
-   std::string word;
-   liner>>word;
-   result[0]= std::stoi(word);
-   liner>>word;
-   result[1]= std::stoi(word);
-}
-
-
-Graph* ProccessFile(std::string filename){
-   std::ifstream file(filename);
-   std::string line;
-   bool first = true;
-   Graph* g;
-   //----------------------------------------
-
-   while(getline(file,line)){
-      int result[2];
-      seeLine(line, result);
-      if(first){
-         g = new Graph(result[0]);
-         createVertices(result[0],*g);
-         first = false;
-      }
-      else{
-         g->getVertice(result[0])->addAdjVertice(g->getVertice(result[1]));
-      }
-   }
-   return g;
-}
-
-*/
 void processInput(char * input_file, Graph& graph){
     FILE *ptrf;
     int numVertices, numConnections;
     char line[MAX_INPUT_SIZE];
 
-    ptrf = fopen("/Users/afonsoalmeida/CLionProjects/test1/file.txt","r");
+    ptrf = fopen(input_file,"r");
 
     fgets(line, sizeof(line)/sizeof(char), ptrf);
     sscanf(line, "%d %d", &numVertices, &numConnections);
