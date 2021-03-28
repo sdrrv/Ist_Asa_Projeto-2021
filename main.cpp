@@ -140,6 +140,7 @@ void DFS_search(Graph& graph, int verticeId){
             std::list<Vertice *> adjList = *(v->getAdjVertices());
             for(Vertice* adjV : adjList){
                 if (adjV->getColor() == BLACK){
+                    adjV->setParent(v);
                     v->addKnockedCount(adjV->getKnockedCount());
                 }
                 else {
