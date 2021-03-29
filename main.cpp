@@ -171,28 +171,18 @@ void createVertices(int numVertices,Graph& graph){
     }
 }
 void processInput(char * input_file, Graph& graph){
-    FILE *ptrf;
     int numVertices, numConnections;
-    char line[MAX_INPUT_SIZE];
-
-    ptrf = fopen(input_file,"r");
-
-    fgets(line, sizeof(line)/sizeof(char), ptrf);
-    sscanf(line, "%d %d", &numVertices, &numConnections);
+    scanf("%d %d", &numVertices, &numConnections);
     graph.setSize(numVertices);
     for (int i = 0; i < numVertices; i++){
         graph.addVertice(i);
     }
 
     for (int i = 0; i < numConnections; i++){
-        fgets(line, sizeof(line)/sizeof(char), ptrf);
         int v1, v2;
-        sscanf(line, "%d %d", &v1, &v2);
+        scanf("%d %d", &v1, &v2);
         graph[v1 - 1]->addAdjVertice(graph[v2 - 1]);
     }
-
-    fclose(ptrf);
-
 }
 
 int main(int argc, char** argv)
