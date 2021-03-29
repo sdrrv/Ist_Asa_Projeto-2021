@@ -133,10 +133,12 @@ void getResult(Graph& graph, std::list<int>& possibleRoots, int res[2]){
 void DFS_search(Graph& graph, int verticeId){
     std::stack<int> verticesStack;
     verticesStack.push(verticeId);
+    int time = 0;
 
     while (!verticesStack.empty()){
         Vertice * v = graph[verticesStack.top()];
         if (v->getColor() == GRAY){
+            v->setEndTime(time);
             v->setColor(BLACK);
             verticesStack.pop();
             if (v->hasParent())
@@ -144,6 +146,7 @@ void DFS_search(Graph& graph, int verticeId){
         }
 
         else if (v->getColor() == WHITE){
+            v->setDiscoveryTime(time);
             v->setColor(GRAY);
 
             std::list<Vertice *> adjList = *(v->getAdjVertices());
@@ -159,6 +162,7 @@ void DFS_search(Graph& graph, int verticeId){
                 }
             }
         }
+        time++;
     }
 
 }
