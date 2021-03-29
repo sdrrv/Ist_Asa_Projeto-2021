@@ -11,9 +11,8 @@ typedef enum COLOR {WHITE, GRAY, BLACK} color;
 
 class Vertice{
 private:
-    int _id;
     Vertice * _parent;
-    int _knockedCount;
+    int _id, _knockedCount, _discoveryTime, _endTime;
     color _color;
     std::unique_ptr<std::list<Vertice *>> _adjVertices;
 public:
@@ -23,8 +22,24 @@ public:
         _color = WHITE;
         _knockedCount = 0;
         _adjVertices = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice*>);
+        _discoveryTime = NONE;
+        _endTime = NONE;
     }
     
+    int getDiscoveryTime(){
+        return _discoveryTime;
+    }
+    void setDiscoveryTime(int time){
+        _discoveryTime = time;
+    }
+
+    int getEndTime(){
+        return _endTime;
+    }
+    void setEndTime(int time){
+        _endTime = time;
+    }
+
     bool hasParent(){
         return _parent != NULL;
     }
