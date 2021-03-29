@@ -1,17 +1,11 @@
-#include <cstdio>
 #include <iostream>
-#include <iterator>
 #include <memory>
-#include <ostream>
 #include <vector>
 #include <list>
 #include <stack>
 #include <string>
-#include <fstream>
-//#include <bits/stdc++.h>
 
 #define NONE -1
-#define MAX_INPUT_SIZE 150
 
 typedef enum COLOR {WHITE, GRAY, BLACK} color;
 
