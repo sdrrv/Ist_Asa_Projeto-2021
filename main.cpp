@@ -165,11 +165,6 @@ void DFS(Graph& graph, std::list<int>& possibleRoots){
 }
 
 
-void createVertices(int numVertices,Graph& graph){
-    for (int i = 0; i< numVertices; i++){
-        graph.addVertice(i);
-    }
-}
 void processInput(char * input_file, Graph& graph){
     int numVertices, numConnections;
     scanf("%d %d", &numVertices, &numConnections);
