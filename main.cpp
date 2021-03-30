@@ -159,13 +159,12 @@ void DFS_search(Graph& graph, int verticeId){
 
             std::list<Vertice *> adjList = *(v->getAdjVertices());
             for(Vertice* adjV : adjList){
-                if (adjV->getColor() == BLACK){
-                    adjV->setParent(v);
+                adjV->setParent(v);
+                if (adjV->getColor() == BLACK && adjV->getEndTime() < v->getDiscoveryTime()){
                     v->addKnockedCount(adjV->getKnockedCount());
                 }
                 else {
                     v->addKnockedCount(1);
-                    adjV->setParent(v);
                     verticesStack.push(adjV->getId());
                 }
             }
