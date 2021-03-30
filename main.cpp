@@ -15,7 +15,7 @@ private:
     int _id, _knockedCount, _discoveryTime, _endTime;
     color _color;
     std::unique_ptr<std::list<Vertice *>> _adjVertices;
-public:
+    public:
     Vertice(int ID) {
         _id = ID;
         _parent = NULL;
@@ -25,7 +25,8 @@ public:
         _discoveryTime = NONE;
         _endTime = NONE;
     }
-    
+
+
     int getDiscoveryTime(){
         return _discoveryTime;
     }
@@ -85,11 +86,19 @@ public:
 class Graph{
 private:
     std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > _vertices;
-    int _size;
+    int _size, _time;
 public:
     Graph(){
         _size = 0;
+        _time = 0;
         _vertices =  std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > (new std::vector< std::unique_ptr<Vertice> >);
+    }
+    int getTime(){
+        return _time;
+    }
+
+    void increaseTime(){
+        _time++;
     }
 
     void setSize(int size){
@@ -133,12 +142,11 @@ void getResult(Graph& graph, std::list<int>& possibleRoots, int res[2]){
 void DFS_search(Graph& graph, int verticeId){
     std::stack<int> verticesStack;
     verticesStack.push(verticeId);
-    int time = 0;
 
     while (!verticesStack.empty()){
         Vertice * v = graph[verticesStack.top()];
         if (v->getColor() == GRAY){
-            v->setEndTime(time);
+            v->setEndTime(graph.getTime());
             v->setColor(BLACK);
             verticesStack.pop();
             if (v->hasParent())
@@ -146,7 +154,7 @@ void DFS_search(Graph& graph, int verticeId){
         }
 
         else if (v->getColor() == WHITE){
-            v->setDiscoveryTime(time);
+            v->setDiscoveryTime(graph.getTime());
             v->setColor(GRAY);
 
             std::list<Vertice *> adjList = *(v->getAdjVertices());
@@ -162,7 +170,7 @@ void DFS_search(Graph& graph, int verticeId){
                 }
             }
         }
-        time++;
+        graph.increaseTime();
     }
 
 }
@@ -198,7 +206,6 @@ int main(int argc, char** argv)
     char* fileName =  argv[1];
     Graph graph;
     processInput(fileName, graph);
-
     std::list<int> possibleRoots;
     int result[2];
 
