@@ -12,20 +12,38 @@ typedef enum COLOR {WHITE, GRAY, BLACK} color;
 class Vertice{
 private:
     Vertice * _parent;
-    int _id, _knockedCount, _discoveryTime, _endTime;
+    int _id, _knockedCount, _discoveryTime, _endTime, _DFSCount;
     color _color;
     std::unique_ptr<std::list<Vertice *>> _adjVertices;
-    public:
+    bool _isRoot;
+public:
     Vertice(int ID) {
         _id = ID;
         _parent = NULL;
         _color = WHITE;
         _knockedCount = 0;
+        _DFSCount = 0;
         _adjVertices = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice*>);
         _discoveryTime = NONE;
         _endTime = NONE;
+        _isRoot = true;
     }
 
+    int getDFSCount(){
+        return _DFSCount;
+    }
+
+    void increaseDFSCount(){
+        _DFSCount++;
+    }
+
+    bool isRoot(){
+        return _isRoot;
+    }
+
+    void setNotRoot(){
+        _isRoot = false;
+    }
 
     int getDiscoveryTime(){
         return _discoveryTime;
@@ -92,7 +110,9 @@ public:
         _size = 0;
         _time = 0;
         _vertices =  std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > (new std::vector< std::unique_ptr<Vertice> >);
+
     }
+
     int getTime(){
         return _time;
     }
@@ -123,11 +143,11 @@ public:
     }
 };
 
-void getResult(Graph& graph, std::list<int>& possibleRoots, int res[2]){
+void getResult(Graph& graph, std::list<int>& roots, int res[2]){
     int max = 0;
     int count = 0;
     
-    for (int i : possibleRoots){
+    for (int i : roots){
         Vertice * v = graph[i];
         if (!v->getParent()){
             if(v->getKnockedCount()> count)
@@ -174,11 +194,11 @@ void DFS_search(Graph& graph, int verticeId){
 
 }
 
-void DFS(Graph& graph, std::list<int>& possibleRoots){
+void DFS(Graph& graph, std::list<int>& roots){
     int size = graph.getSize();
     for (int i = 0; i < size; i++){
-        if (graph[i]->getColor() == WHITE){
-            possibleRoots.push_back(i);
+        if (graph[i]->isRoot()){
+            roots.push_back(i);
             DFS_search(graph, i);
         }
     }
@@ -197,6 +217,7 @@ void processInput(char * input_file, Graph& graph){
         int v1, v2;
         scanf("%d %d", &v1, &v2);
         graph[v1 - 1]->addAdjVertice(graph[v2 - 1]);
+        graph[v2]->setNotRoot();
     }
 }
 
@@ -205,11 +226,11 @@ int main(int argc, char** argv)
     char* fileName =  argv[1];
     Graph graph;
     processInput(fileName, graph);
-    std::list<int> possibleRoots;
+    std::list<int> roots;
     int result[2];
 
-    DFS(graph,possibleRoots);
-    getResult(graph,possibleRoots, result);
+    DFS(graph,roots);
+    getResult(graph,roots, result);
 
     std::cout << result[0] << " " << result[1] << std::endl;
 }
