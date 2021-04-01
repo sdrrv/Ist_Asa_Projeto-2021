@@ -16,6 +16,11 @@ private:
     color _color;
     std::unique_ptr<std::list<Vertice *>> _adjVertices;
     bool _isRoot;
+
+    void reset(){
+        _color = WHITE;
+        _knockedCount = 0;
+    }
 public:
     Vertice(int ID) {
         _id = ID;
@@ -78,8 +83,11 @@ public:
     void setColor(COLOR c){
         _color = c;
     }
+    
 
-    COLOR getColor(){
+    COLOR getColor(int DFSCount){
+        if(DFSCount != _DFSCount)
+            reset();
         return _color;
     }
 
@@ -104,13 +112,22 @@ public:
 class Graph{
 private:
     std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > _vertices;
-    int _size, _time;
+    int _size, _time, _DFSCount;
 public:
     Graph(){
         _size = 0;
         _time = 0;
+        _DFSCount = 0;
         _vertices =  std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > (new std::vector< std::unique_ptr<Vertice> >);
 
+    }
+    
+    int getDFSCount(){
+        return _DFSCount;
+    }
+
+    void increaseDFSCount(){
+        _DFSCount++;
     }
 
     int getTime(){
@@ -163,35 +180,11 @@ void DFS_search(Graph& graph, int verticeId){
     std::stack<int> verticesStack;
     verticesStack.push(verticeId);
 
-    while (!verticesStack.empty()){
-        Vertice * v = graph[verticesStack.top()];
-        if (v->getColor() == GRAY){
-            v->setEndTime(graph.getTime());
-            v->setColor(BLACK);
-            verticesStack.pop();
-            if (v->hasParent())
-                v->getParent()->addKnockedCount(v->getKnockedCount());
+    while(!verticesStack.empty()){
+        Vertice* v = graph[verticesStack.top()];
+        if(v->getColor(graph.getDFSCount()) == WHITE){
+
         }
-
-        else if (v->getColor() == WHITE){
-            v->setDiscoveryTime(graph.getTime());
-            v->setColor(GRAY);
-
-            std::list<Vertice *> adjList = *(v->getAdjVertices());
-            for(Vertice* adjV : adjList){
-                adjV->setParent(v);
-                if (adjV->getColor() == BLACK && adjV->getEndTime() < v->getDiscoveryTime()){
-                    v->addKnockedCount(adjV->getKnockedCount());
-                }
-                else {
-                    v->addKnockedCount(1);
-                    verticesStack.push(adjV->getId());
-                }
-            }
-        }
-        graph.increaseTime();
-    }
-
 }
 
 void DFS(Graph& graph, std::list<int>& roots){
@@ -199,6 +192,7 @@ void DFS(Graph& graph, std::list<int>& roots){
     for (int i = 0; i < size; i++){
         if (graph[i]->isRoot()){
             roots.push_back(i);
+            graph.increaseDFSCount();
             DFS_search(graph, i);
         }
     }
