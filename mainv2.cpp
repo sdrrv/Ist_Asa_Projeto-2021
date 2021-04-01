@@ -182,9 +182,8 @@ void DFS_search(Graph& graph, int verticeId){
 
     while(!verticesStack.empty()){
         Vertice* v = graph[verticesStack.top()];
-        if(v->getColor(graph.getDFSCount()) == WHITE){
-
-        }
+        
+    }
 }
 
 void DFS(Graph& graph, std::list<int>& roots){
