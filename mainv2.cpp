@@ -17,9 +17,10 @@ private:
     std::unique_ptr<std::list<Vertice *>> _adjVertices;
     bool _isRoot;
 
-    void reset(){
+    void reset(int DFSCount){
         _color = WHITE;
         _knockedCount = 0;
+        _DFSCount = DFSCount;
     }
 public:
     Vertice(int ID) {
@@ -30,6 +31,11 @@ public:
         _DFSCount = 0;
         _adjVertices = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice*>);
         _isRoot = true;
+    }
+
+
+    void setDFSCount(int DFSCount){
+        _DFSCount = DFSCount;
     }
 
     int getDFSCount(){
@@ -71,7 +77,7 @@ public:
 
     COLOR getColor(int DFSCount){
         if(DFSCount != _DFSCount)
-            reset();
+            reset(DFSCount);
         return _color;
     }
 
@@ -114,8 +120,8 @@ public:
     }
 
     void setSize(int size){
-       _size = size;
-       _vertices->reserve(_size);
+        _size = size;
+        _vertices->reserve(_size);
     }
 
     int getSize(){
@@ -151,27 +157,31 @@ void getResult(Graph& graph, std::list<int>& roots, int res[2]){
 
 void DFS_search(Graph& graph, int verticeId){
     std::stack<int> verticesStack;
+    graph[verticeId]->setDFSCount(graph.getDFSCount());
+    graph[verticeId]->setColor(GRAY);
     verticesStack.push(verticeId);
 
     while(!verticesStack.empty()){
         Vertice* v = graph[verticesStack.top()];
-        if(v->getColor(graph.getDFSCount()) == WHITE){
-            v->setColor(GRAY);
+        if(v->getColor(graph.getDFSCount()) == GRAY){
+            v->setColor(BLACK);
             std::list<Vertice*> adjList = *(v->getAdjVertices());
             for(Vertice* adjVertice : adjList){
                 if(adjVertice->getColor(graph.getDFSCount()) == WHITE){
                     v->addKnockedCount(1);
                     adjVertice->setParent(v);
+                    adjVertice->setColor(GRAY);
                     verticesStack.push(adjVertice->getId());
                 }
             }
         }
-        else if (v->getColor(graph.getDFSCount()) == GRAY){
-            v->setColor(BLACK);
-            v->getParent()->addKnockedCount(v->getKnockedCount());
+
+        else if (v->getColor(graph.getDFSCount()) == BLACK){
+            if (!v->isRoot())
+                v->getParent()->addKnockedCount(v->getKnockedCount());
             verticesStack.pop();
         }
-        
+
     }
 }
 
@@ -216,6 +226,3 @@ int main(int argc, char** argv)
 
     std::cout << result[0] << " " << result[1] << std::endl;
 }
-
-
-
