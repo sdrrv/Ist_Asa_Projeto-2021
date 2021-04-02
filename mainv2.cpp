@@ -12,7 +12,7 @@ typedef enum COLOR {WHITE, GRAY, BLACK} color;
 class Vertice{
 private:
     Vertice * _parent;
-    int _id, _knockedCount, _discoveryTime, _endTime, _DFSCount;
+    int _id, _knockedCount, _DFSCount;
     color _color;
     std::unique_ptr<std::list<Vertice *>> _adjVertices;
     bool _isRoot;
