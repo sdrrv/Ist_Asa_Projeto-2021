@@ -111,6 +111,18 @@ public:
 
     }
 
+    void setTime(int time) {
+        _time = time;
+    }
+
+    void increaseTime(){
+        _time++;
+    }
+
+    int getTime(){
+        return _time;
+    }
+
     int getDFSCount(){
         return _DFSCount;
     }
@@ -147,8 +159,8 @@ void getResult(Graph& graph, std::list<int>& roots, int res[2]){
 
     for (int i : roots){
         Vertice * v = graph[i];
-        if(v->getKnockedCount() > max)
-            max = v->getKnockedCount();
+        if(v->getKnockedCount() > (max - 1))
+            max = v->getKnockedCount() - 1;
         count++;
     }
     res[0] = count;
@@ -157,12 +169,25 @@ void getResult(Graph& graph, std::list<int>& roots, int res[2]){
 
 void DFS_search(Graph& graph, int verticeId){
     std::stack<int> verticesStack;
-    graph[verticeId]->setDFSCount(graph.getDFSCount());
-    graph[verticeId]->setColor(GRAY);
+    Vertice* root = graph[verticeId];
     verticesStack.push(verticeId);
 
     while(!verticesStack.empty()){
         Vertice* v = graph[verticesStack.top()];
+        verticesStack.pop();
+
+        if (v->getColor(graph.getDFSCount()) == WHITE) {
+            root->addKnockedCount(1);
+            v->setColor(GRAY);
+            std::list<Vertice*> adjList = *(v->getAdjVertices());
+            for(Vertice* adjVertice : adjList){
+                if(adjVertice->getColor(graph.getDFSCount()) == WHITE){
+                    verticesStack.push(adjVertice->getId());
+                }
+            }
+        }
+
+        /*
         if(v->getColor(graph.getDFSCount()) == GRAY){
             v->setColor(BLACK);
             std::list<Vertice*> adjList = *(v->getAdjVertices());
@@ -181,7 +206,7 @@ void DFS_search(Graph& graph, int verticeId){
                 v->getParent()->addKnockedCount(v->getKnockedCount());
             verticesStack.pop();
         }
-
+        */
     }
 }
 
