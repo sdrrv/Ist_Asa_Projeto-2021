@@ -197,7 +197,7 @@ void DFS(Graph& graph, std::list<int>& roots){
 }
 
 
-void processInput(char * input_file, Graph& graph){
+void processInput(Graph& graph){
     int numVertices, numConnections;
     scanf("%d %d", &numVertices, &numConnections);
     graph.setSize(numVertices);
@@ -209,15 +209,14 @@ void processInput(char * input_file, Graph& graph){
         int v1, v2;
         scanf("%d %d", &v1, &v2);
         graph[v1 - 1]->addAdjVertice(graph[v2 - 1]);
-        graph[v2]->setNotRoot();
+        graph[v2 - 1]->setNotRoot();
     }
 }
 
-int main(int argc, char** argv)
+int main()
 {
-    char* fileName =  argv[1];
     Graph graph;
-    processInput(fileName, graph);
+    processInput(graph);
     std::list<int> roots;
     int result[2];
 
