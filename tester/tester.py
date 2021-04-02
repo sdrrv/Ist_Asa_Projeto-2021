@@ -24,8 +24,8 @@ def populateInput(testInput, vertices, connections):
 
 def test(iter, vertices, connections):
     compile()
-    os.system(f"touch {direct}/Algo.out")
-    os.system(f"touch {direct}/TestingCode.out")
+    os.system(f"touch {direct}/0Algo.out")
+    os.system(f"touch {direct}/0TestingCode.out")
     for i in range(iter):
         print(i)
         testInput = (direct+"/"+f"Input{i}.in")
