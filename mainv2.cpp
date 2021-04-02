@@ -83,7 +83,7 @@ public:
     void setColor(COLOR c){
         _color = c;
     }
-    
+
 
     COLOR getColor(int DFSCount){
         if(DFSCount != _DFSCount)
@@ -121,7 +121,7 @@ public:
         _vertices =  std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > (new std::vector< std::unique_ptr<Vertice> >);
 
     }
-    
+
     int getDFSCount(){
         return _DFSCount;
     }
@@ -163,14 +163,12 @@ public:
 void getResult(Graph& graph, std::list<int>& roots, int res[2]){
     int max = 0;
     int count = 0;
-    
+
     for (int i : roots){
         Vertice * v = graph[i];
-        if (!v->getParent()){
-            if(v->getKnockedCount()> count)
-                max = v->getKnockedCount();
-            count++;
-        }
+        if(v->getKnockedCount() > max)
+            max = v->getKnockedCount();
+        count++;
     }
     res[0] = count;
     res[1] = max;
@@ -182,7 +180,7 @@ void DFS_search(Graph& graph, int verticeId){
 
     while(!verticesStack.empty()){
         Vertice* v = graph[verticesStack.top()];
-        
+
     }
 }
 
@@ -228,5 +226,5 @@ int main(int argc, char** argv)
     std::cout << result[0] << " " << result[1] << std::endl;
 }
 
- 
+
 
