@@ -23,7 +23,7 @@ public:
         _isRoot = true;
         _parents = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice *>);
         _color = WHITE;
-        _maxPath = 0;
+        _maxPath = 1;
         _adjVertices = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice*>);
     }
 
