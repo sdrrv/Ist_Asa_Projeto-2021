@@ -15,16 +15,20 @@ private:
     int _id, _maxPath;
     color _color;
     std::unique_ptr<std::list<Vertice *>> _adjVertices;
-    std:: unique_ptr<std::list<int>> _parents;
+    std:: unique_ptr<std::list<Vertice *>> _parents;
     bool _isRoot;
 public:
     Vertice(int ID) {
         _id = ID;
         _isRoot = true;
-        _parents = std::unique_ptr<std::list<int>> (new std::list<int>);
+        _parents = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice *>);
         _color = WHITE;
         _maxPath = 0;
         _adjVertices = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice*>);
+    }
+
+    void setNotRoot(){
+        _isRoot = false;
     }
 
     bool isRoot(){
@@ -32,15 +36,15 @@ public:
     }
 
 
-    void addParent(int parentID) {
-        _parents->push_back(parentID);
+    void addParent(Vertice* parent) {
+        _parents->push_back(parent);
     }
 
     int getId(){
         return _id;
     }
 
-    std::list<int>* getParents(){
+    std::list<Vertice *>* getParents(){
         return _parents.get();
     }
 
@@ -53,9 +57,11 @@ public:
         return _color;
     }
 
-    void setMaxPath(int n){
-        _maxPath += n;
+    void updateMaxPath(int newMax){
+        if (_maxPath < newMax)
+            _maxPath =  newMax;
     }
+
     int getMaxPath(){
         return _maxPath;
     }
@@ -120,13 +126,50 @@ void getResult(Graph& graph, std::list<int>& roots, int res[2]){
 
 void DFS_search(Graph& graph, int verticeId){
     std::stack<int> verticesStack;
+    verticesStack.push(verticeId);
+
+    while (!verticesStack.empty()) {
+        Vertice* v = graph[verticesStack.top()];
+
+        if (v->getColor() == WHITE) {
+            v->setColor(GRAY);    
+            std::list<Vertice*> adjList = *(v->getAdjVertices());
+
+            for (Vertice* adjV : adjList) {
+                // there can never be a GRAY adjV since it is a DAG
+                if (adjV->getColor() == WHITE) {
+                    adjV->addParent(v);
+                    verticesStack.push(adjV->getId());
+                }
+
+                else if (adjV->getColor() == BLACK) {
+                    v->updateMaxPath(1 + adjV->getMaxPath());
+                }
+            }
+        } 
+
+        else if (v->getColor() == GRAY) {
+            v->setColor(BLACK);
+            std::list<Vertice *> parentsList = *(v->getParents());
+
+            for (Vertice* parent : parentsList)
+                parent->updateMaxPath(1 + v->getMaxPath());
+            verticesStack.pop();
+        }
+
+        //if v is BLACK, then it is repeated 
+        else if (v->getColor() == BLACK) {
+            verticesStack.pop();
+        }
+    }
 }
 
 void DFS(Graph& graph, std::list<int>& possibleRoots){
     int size = graph.getSize();
     for (int i = 0; i < size; i++){
         if (graph[i]->getColor() == WHITE){
-            possibleRoots.push_back(i);
+            if (graph[i]->isRoot())
+                possibleRoots.push_back(i);
             DFS_search(graph, i);
         }
     }
@@ -145,6 +188,7 @@ void processInput(Graph& graph){
         int v1, v2;
         scanf("%d %d", &v1, &v2);
         graph[v1 - 1]->addAdjVertice(graph[v2 - 1]);
+        graph[v2 - 1]->setNotRoot();
     }
 }
 
