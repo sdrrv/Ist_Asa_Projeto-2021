@@ -224,15 +224,18 @@ void DFS(Graph& graph, std::list<int>& roots){
 
 void processInput(Graph& graph){
     int numVertices, numConnections;
-    scanf("%d %d", &numVertices, &numConnections);
+    if(!scanf("%d %d", &numVertices, &numConnections)){
+            std::cout << "Erro" << std::endl;
+        }
     graph.setSize(numVertices);
     for (int i = 0; i < numVertices; i++){
         graph.addVertice(i);
     }
-
     for (int i = 0; i < numConnections; i++){
         int v1, v2;
-        scanf("%d %d", &v1, &v2);
+        if(!scanf("%d %d", &v1, &v2)){
+            std::cout << "Erro" << std::endl;
+        }
         graph[v1 - 1]->addAdjVertice(graph[v2 - 1]);
         graph[v2 - 1]->setNotRoot();
     }
