@@ -1,4 +1,5 @@
 import os
+import time
 algo = r"./mainv2.cpp"
 testingCode = r"./projeto1.cpp"
 randomGen = r"./randomDAG.cpp"
@@ -18,6 +19,7 @@ def compile():
 
 
 def populateInput(testInput, vertices, connections):
+    # time.sleep(0.5)
     os.system(f"g++ -std=c++11 -O3 -Wall {randomGen} -lm -o randomGen.out")
     os.system(f"./randomGen.out {vertices} {connections} > {testInput}")
 

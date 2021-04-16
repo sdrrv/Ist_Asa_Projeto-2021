@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -11,63 +12,40 @@ typedef enum COLOR {WHITE, GRAY, BLACK} color;
 
 class Vertice{
 private:
-    Vertice * _parent;
-    int _id, _knockedCount, _DFSCount;
+    int _id, _maxPath;
     color _color;
     std::unique_ptr<std::list<Vertice *>> _adjVertices;
+    std:: unique_ptr<std::list<Vertice *>> _parents;
     bool _isRoot;
-
-    void reset(int DFSCount){
-        _color = WHITE;
-        _knockedCount = 0;
-        _DFSCount = DFSCount;
-    }
 public:
     Vertice(int ID) {
         _id = ID;
-        _parent = NULL;
-        _color = WHITE;
-        _knockedCount = 0;
-        _DFSCount = 0;
-        _adjVertices = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice*>);
         _isRoot = true;
-    }
-
-
-    void setDFSCount(int DFSCount){
-        _DFSCount = DFSCount;
-    }
-
-    int getDFSCount(){
-        return _DFSCount;
-    }
-
-    void increaseDFSCount(){
-        _DFSCount++;
-    }
-
-    bool isRoot(){
-        return _isRoot;
+        _parents = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice *>);
+        _color = WHITE;
+        _maxPath = 1;
+        _adjVertices = std::unique_ptr<std::list<Vertice *>> (new std::list<Vertice*>);
     }
 
     void setNotRoot(){
         _isRoot = false;
     }
 
-    bool hasParent(){
-        return _parent != NULL;
+    bool isRoot(){
+        return _isRoot;
     }
 
-    void setParent(Vertice * p) {
-        _parent = p;
+
+    void addParent(Vertice* parent) {
+        _parents->push_back(parent);
     }
 
     int getId(){
         return _id;
     }
 
-    Vertice * getParent(){
-        return _parent;
+    std::list<Vertice *>* getParents(){
+        return _parents.get();
     }
 
     void setColor(COLOR c){
@@ -75,17 +53,17 @@ public:
     }
 
 
-    COLOR getColor(int DFSCount){
-        if(DFSCount != _DFSCount)
-            reset(DFSCount);
+    COLOR getColor(){
         return _color;
     }
 
-    void addKnockedCount(int n){
-        _knockedCount += n;
+    void updateMaxPath(int newMax){
+        if (_maxPath < newMax)
+            _maxPath =  newMax;
     }
-    int getKnockedCount(){
-        return _knockedCount;
+
+    int getMaxPath(){
+        return _maxPath;
     }
 
     void addAdjVertice(Vertice *v)
@@ -102,33 +80,12 @@ public:
 class Graph{
 private:
     std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > _vertices;
-    int _size, _time, _DFSCount;
+    int _size;
 public:
     Graph(){
         _size = 0;
-        _DFSCount = 0;
         _vertices =  std::unique_ptr< std::vector< std::unique_ptr<Vertice> > > (new std::vector< std::unique_ptr<Vertice> >);
 
-    }
-
-    void setTime(int time) {
-        _time = time;
-    }
-
-    void increaseTime(){
-        _time++;
-    }
-
-    int getTime(){
-        return _time;
-    }
-
-    int getDFSCount(){
-        return _DFSCount;
-    }
-
-    void increaseDFSCount(){
-        _DFSCount++;
     }
 
     void setSize(int size){
@@ -159,8 +116,8 @@ void getResult(Graph& graph, std::list<int>& roots, int res[2]){
 
     for (int i : roots){
         Vertice * v = graph[i];
-        if(v->getKnockedCount() > (max - 1))
-            max = v->getKnockedCount() - 1;
+        if(v->getMaxPath() > max)
+            max = v->getMaxPath();
         count++;
     }
     res[0] = count;
@@ -169,53 +126,50 @@ void getResult(Graph& graph, std::list<int>& roots, int res[2]){
 
 void DFS_search(Graph& graph, int verticeId){
     std::stack<int> verticesStack;
-    Vertice* root = graph[verticeId];
     verticesStack.push(verticeId);
 
-    while(!verticesStack.empty()){
+    while (!verticesStack.empty()) {
         Vertice* v = graph[verticesStack.top()];
-        verticesStack.pop();
 
-        if (v->getColor(graph.getDFSCount()) == WHITE) {
-            root->addKnockedCount(1);
-            v->setColor(GRAY);
+        if (v->getColor() == WHITE) {
+            v->setColor(GRAY);    
             std::list<Vertice*> adjList = *(v->getAdjVertices());
-            for(Vertice* adjVertice : adjList){
-                if(adjVertice->getColor(graph.getDFSCount()) == WHITE){
-                    verticesStack.push(adjVertice->getId());
+
+            for (Vertice* adjV : adjList) {
+                // there can never be a GRAY adjV since it is a DAG
+                if (adjV->getColor() == WHITE) {
+                    adjV->addParent(v);
+                    verticesStack.push(adjV->getId());
+                }
+
+                else if (adjV->getColor() == BLACK) {
+                    v->updateMaxPath(1 + adjV->getMaxPath());
                 }
             }
-        }
+        } 
 
-        /*
-        if(v->getColor(graph.getDFSCount()) == GRAY){
+        else if (v->getColor() == GRAY) {
             v->setColor(BLACK);
-            std::list<Vertice*> adjList = *(v->getAdjVertices());
-            for(Vertice* adjVertice : adjList){
-                if(adjVertice->getColor(graph.getDFSCount()) == WHITE){
-                    v->addKnockedCount(1);
-                    adjVertice->setParent(v);
-                    adjVertice->setColor(GRAY);
-                    verticesStack.push(adjVertice->getId());
-                }
-            }
-        }
+            std::list<Vertice *> parentsList = *(v->getParents());
 
-        else if (v->getColor(graph.getDFSCount()) == BLACK){
-            if (!v->isRoot())
-                v->getParent()->addKnockedCount(v->getKnockedCount());
+            for (Vertice* parent : parentsList)
+                parent->updateMaxPath(1 + v->getMaxPath());
             verticesStack.pop();
         }
-        */
+
+        //if v is BLACK, then it is repeated 
+        else if (v->getColor() == BLACK) {
+            verticesStack.pop();
+        }
     }
 }
 
-void DFS(Graph& graph, std::list<int>& roots){
+void DFS(Graph& graph, std::list<int>& possibleRoots){
     int size = graph.getSize();
     for (int i = 0; i < size; i++){
-        if (graph[i]->isRoot()){
-            roots.push_back(i);
-            graph.increaseDFSCount();
+        if (graph[i]->getColor() == WHITE){
+            if (graph[i]->isRoot())
+                possibleRoots.push_back(i);
             DFS_search(graph, i);
         }
     }
@@ -224,18 +178,15 @@ void DFS(Graph& graph, std::list<int>& roots){
 
 void processInput(Graph& graph){
     int numVertices, numConnections;
-    if(!scanf("%d %d", &numVertices, &numConnections)){
-            std::cout << "Erro" << std::endl;
-        }
+    scanf("%d %d", &numVertices, &numConnections);
     graph.setSize(numVertices);
     for (int i = 0; i < numVertices; i++){
         graph.addVertice(i);
     }
+
     for (int i = 0; i < numConnections; i++){
         int v1, v2;
-        if(!scanf("%d %d", &v1, &v2)){
-            std::cout << "Erro" << std::endl;
-        }
+        scanf("%d %d", &v1, &v2);
         graph[v1 - 1]->addAdjVertice(graph[v2 - 1]);
         graph[v2 - 1]->setNotRoot();
     }
@@ -245,11 +196,11 @@ int main()
 {
     Graph graph;
     processInput(graph);
-    std::list<int> roots;
+    std::list<int> possibleRoots;
     int result[2];
 
-    DFS(graph,roots);
-    getResult(graph,roots, result);
+    DFS(graph,possibleRoots);
+    getResult(graph,possibleRoots, result);
 
     std::cout << result[0] << " " << result[1] << std::endl;
 }

@@ -8,23 +8,23 @@
 
 #define NONE -1
 
-typedef enum COLOR {WHITE, GRAY, BLACK} color;
+typedef enum COLOR {WHITE, GRAY, BLACK} color; //enum COLOR that represents the color of the given vertex
 
-class Vertex{
+class Vertex{ // vertex class represents the vertice
 private:
-    int _id, _maxPath;
-    color _color;
-    bool _isRoot;
-    std::unique_ptr<std::list<Vertex *>> _adjVertexes;
-    std:: unique_ptr<std::list<Vertex *>> _parents;
+    int _id, _maxPath; // id represents the name of the vetice. And the maxPath represents the longest path from the given vetice at a given time
+    color _color; // color of the vertice 
+    bool _isRoot; // a ool that tells whether the given vetice is a root or not
+    std::unique_ptr<std::list<Vertex *>> _adjVertexes; // all the adj vertices
+    std:: unique_ptr<std::list<Vertex *>> _parents; // all the parents of a given vertice
 
-public:
-    Vertex(int ID)
+public: 
+    Vertex(int ID) 
     : _id(ID), _maxPath(1), _color(WHITE), _isRoot(true),
       _adjVertexes(new std::list<Vertex*>),
       _parents(new std::list<Vertex *>) {}
 
-    void setNotRoot(){
+    void setNotRoot(){ 
         _isRoot = false;
     }
 
@@ -53,7 +53,7 @@ public:
         return _color;
     }
 
-    void updateMaxPath(int newMax){
+    void updateMaxPath(int newMax){ // updates the maxPath if the current max path is lower than the maxPath given
         if (_maxPath < newMax)
             _maxPath =  newMax;
     }
@@ -73,10 +73,10 @@ public:
     }
 };
 
-class Graph{
+class Graph{ // the Graph class represents the Graph that holds all the vertices
 private:
-    int _size;
-    std::unique_ptr< std::vector< std::unique_ptr<Vertex> > > _vertices;
+    int _size; // the size of the graph, it helps for optimization porposes 
+    std::unique_ptr< std::vector< std::unique_ptr<Vertex> > > _vertices; // where all the vertices are stored
 
 public:
     Graph()
@@ -105,7 +105,7 @@ public:
     }
 };
 
-void getResult(Graph& graph, std::list<int>& roots, int res[2]){
+void getResult(Graph& graph, std::list<int>& roots, int res[2]){ // the getResult function translates the output from the DFS and returns it as the ouput we wanted
     int max = 0;
     int count = 0;
 
@@ -115,8 +115,8 @@ void getResult(Graph& graph, std::list<int>& roots, int res[2]){
             max = v->getMaxPath();
         count++;
     }
-    res[0] = count;
-    res[1] = max;
+    res[0] = count; // number of roots
+    res[1] = max; // maxPath
 }
 
 void DFS_search(Graph& graph, int verticeId){
@@ -171,7 +171,7 @@ void DFS(Graph& graph, std::list<int>& roots){
 }
 
 
-void processInput(Graph& graph){
+void processInput(Graph& graph){ // will load the input into the graph class and create the vertices
     int numVertexes, numConnections;
     scanf("%d %d", &numVertexes, &numConnections);
     graph.setSize(numVertexes);
@@ -197,5 +197,5 @@ int main()
     DFS(graph, roots);
     getResult(graph, roots, result);
 
-    std::cout << result[0] << " " << result[1] << std::endl;
+    std::cout << result[0] << " " << result[1] << std::endl; // output
 }
