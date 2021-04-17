@@ -14,7 +14,7 @@ class Vertex{ // vertex class represents the vertice
 private:
     int _id, _maxPath; // id represents the name of the vetice. And the maxPath represents the longest path from the given vetice at a given time
     color _color; // color of the vertice 
-    bool _isRoot; // a ool that tells whether the given vetice is a root or not
+    bool _isRoot; // a bool that tells whether the given vetice is a root or not
     std::unique_ptr<std::list<Vertex *>> _adjVertexes; // all the adj vertices
     std:: unique_ptr<std::list<Vertex *>> _parents; // all the parents of a given vertice
 
@@ -53,7 +53,7 @@ public:
         return _color;
     }
 
-    void updateMaxPath(int newMax){ // updates the maxPath if the current max path is lower than the maxPath given
+    void updateMaxPath(int newMax){ // updates the maxPath if the current maxPath is lower than the maxPath given
         if (_maxPath < newMax)
             _maxPath =  newMax;
     }
@@ -116,7 +116,7 @@ void getResult(Graph& graph, std::list<int>& roots, int res[2]){ // the getResul
         count++;
     }
     res[0] = count; // number of roots
-    res[1] = max; // maxPath
+    res[1] = max; // higher maxPath
 }
 
 void DFS_search(Graph& graph, int verticeId){
@@ -187,7 +187,7 @@ void processInput(Graph& graph){ // will load the input into the graph class and
     }
 }
 
-int main()
+int main() // main function
 {
     Graph graph;
     processInput(graph);
